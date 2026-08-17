@@ -1,4 +1,4 @@
-namespace Sms.Client.Http.Models;
+namespace Sms.Client.Http.Features.GetMenu;
 
 public sealed record MenuItem(
     string Id,
