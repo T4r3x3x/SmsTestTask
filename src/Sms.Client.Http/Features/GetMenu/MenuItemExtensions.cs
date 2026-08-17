@@ -1,4 +1,5 @@
 using Sms.Client.Http.Client;
+using Sms.Shared.Sms;
 
 namespace Sms.Client.Http.Features.GetMenu;
 

@@ -5,10 +5,11 @@ using System.Text;
 using System.Text.Json;
 using Sms.Client.Http.Features.GetMenu;
 using Sms.Client.Http.Features.SendOrder;
+using Sms.Shared.Sms;
 
 namespace Sms.Client.Http.Client;
 
-public sealed class SmsHttpClient : ISmsHttpClient
+public sealed class SmsHttpClient : ISmsClient
 {
     private const string GetMenuCommand = "GetMenu";
     private const string SendOrderCommand = "SendOrder";

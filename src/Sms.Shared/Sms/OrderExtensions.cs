@@ -1,8 +1,8 @@
-namespace Sms.Client.Http.Features.SendOrder;
+namespace Sms.Shared.Sms;
 
-internal static class OrderExtensions
+public static class OrderExtensions
 {
-    internal static void Validate(this Order order)
+    public static void Validate(this Order order)
     {
         ArgumentNullException.ThrowIfNull(order);
 

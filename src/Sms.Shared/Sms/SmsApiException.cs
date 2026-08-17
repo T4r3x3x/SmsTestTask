@@ -1,4 +1,4 @@
-namespace Sms.Client.Http.Client;
+namespace Sms.Shared.Sms;
 
 public sealed class SmsApiException : Exception
 {

@@ -1,4 +1,4 @@
-namespace Sms.Client.Http.Features.GetMenu;
+namespace Sms.Shared.Sms;
 
 public sealed record MenuItem(
     string Id,

@@ -1,7 +1,7 @@
 using System.Net;
 using System.Text.Json;
 using Sms.Client.Http.Client;
-using Sms.Client.Http.Features.SendOrder;
+using Sms.Shared.Sms;
 
 namespace Sms.Client.Http.Tests;
 

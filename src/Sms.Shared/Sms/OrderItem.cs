@@ -1,3 +1,3 @@
-namespace Sms.Client.Http.Features.SendOrder;
+namespace Sms.Shared.Sms;
 
 public sealed record OrderItem(string Id, decimal Quantity);

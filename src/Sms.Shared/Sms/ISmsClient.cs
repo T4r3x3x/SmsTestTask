@@ -1,9 +1,6 @@
-using Sms.Client.Http.Features.GetMenu;
-using Sms.Client.Http.Features.SendOrder;
+namespace Sms.Shared.Sms;
 
-namespace Sms.Client.Http.Client;
-
-public interface ISmsHttpClient
+public interface ISmsClient
 {
     Task<IReadOnlyList<MenuItem>> GetMenuAsync(CancellationToken cancellationToken = default);
 

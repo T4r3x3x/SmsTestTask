@@ -6,8 +6,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Sms.Shared\Sms.Shared.csproj" />
-  </ItemGroup>
-
 </Project>
