@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{C4D2A689-4E59-4173-8577-0EFF92C95040}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sms.Client.Http", "src\Sms.Client.Http\Sms.Client.Http.csproj", "{8EC3A6E8-BA02-4116-B916-78E0B7087376}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{9BCA38BE-2D95-453A-9DC3-6BC86D3869AB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sms.Client.Http.Tests", "tests\Sms.Client.Http.Tests\Sms.Client.Http.Tests.csproj", "{00399006-FBC2-47E9-9423-64B60AE2E760}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8EC3A6E8-BA02-4116-B916-78E0B7087376}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EC3A6E8-BA02-4116-B916-78E0B7087376}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8EC3A6E8-BA02-4116-B916-78E0B7087376}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8EC3A6E8-BA02-4116-B916-78E0B7087376}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00399006-FBC2-47E9-9423-64B60AE2E760}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00399006-FBC2-47E9-9423-64B60AE2E760}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00399006-FBC2-47E9-9423-64B60AE2E760}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00399006-FBC2-47E9-9423-64B60AE2E760}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8EC3A6E8-BA02-4116-B916-78E0B7087376} = {C4D2A689-4E59-4173-8577-0EFF92C95040}
+		{00399006-FBC2-47E9-9423-64B60AE2E760} = {9BCA38BE-2D95-453A-9DC3-6BC86D3869AB}
+	EndGlobalSection
+EndGlobal

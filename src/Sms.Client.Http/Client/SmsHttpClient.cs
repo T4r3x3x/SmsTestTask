@@ -13,7 +13,7 @@ public sealed class SmsHttpClient : ISmsHttpClient
     private const string GetMenuCommand = "GetMenu";
     private const string SendOrderCommand = "SendOrder";
 
-    private static readonly JsonSerializerOptions SerializerOptions = new(JsonSerializerDefaults.Web)
+    private static readonly JsonSerializerOptions s_serializerOptions = new(JsonSerializerDefaults.Web)
     {
         PropertyNameCaseInsensitive = true
     };
@@ -46,10 +46,10 @@ public sealed class SmsHttpClient : ISmsHttpClient
 
         _httpClient = httpClient;
         _endpoint = endpoint;
-        
+
         var credentials = Convert.ToBase64String(
             Encoding.UTF8.GetBytes($"{options.Username}:{options.Password}"));
-        
+
         _authorization = new AuthenticationHeaderValue("Basic", credentials);
     }
 
@@ -86,6 +86,7 @@ public sealed class SmsHttpClient : ISmsHttpClient
                 item.Id,
                 item.Quantity.ToString(CultureInfo.InvariantCulture)))
             .ToArray();
+
         var parameters = new SendOrderParameters(order.Id, items);
         var request = new SendOrderRequest(SendOrderCommand, parameters);
 
@@ -105,7 +106,7 @@ public sealed class SmsHttpClient : ISmsHttpClient
     {
         using var request = new HttpRequestMessage(HttpMethod.Post, _endpoint);
 
-        request.Content = JsonContent.Create(body, options: SerializerOptions);
+        request.Content = JsonContent.Create(body, options: s_serializerOptions);
         request.Headers.Authorization = _authorization;
 
         using var response = await _httpClient.SendAsync(
@@ -113,12 +114,13 @@ public sealed class SmsHttpClient : ISmsHttpClient
                 HttpCompletionOption.ResponseHeadersRead,
                 cancellationToken)
             .ConfigureAwait(false);
+
         response.EnsureSuccessStatusCode();
 
         try
         {
             var result = await response.Content
-                .ReadFromJsonAsync<TResponse>(SerializerOptions, cancellationToken)
+                .ReadFromJsonAsync<TResponse>(s_serializerOptions, cancellationToken)
                 .ConfigureAwait(false);
             return result ?? throw new SmsProtocolException("SMS server returned an empty response body.");
         }
