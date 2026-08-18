@@ -2,19 +2,19 @@ using System.Text.Json;
 
 namespace Sms.Shared.Configuration;
 
-public static class JsonSettingsLoader
+public sealed class JsonSettingsLoader : ISettingsLoader
 {
-    private static readonly JsonSerializerOptions Options = new(JsonSerializerDefaults.Web)
+    private static readonly JsonSerializerOptions s_options = new(JsonSerializerDefaults.Web)
     {
         PropertyNameCaseInsensitive = true,
         ReadCommentHandling = JsonCommentHandling.Skip,
         AllowTrailingCommas = true
     };
 
-    public static T Load<T>(string path)
+    public T Load<T>(string path)
     {
         using var stream = File.OpenRead(path);
-        return JsonSerializer.Deserialize<T>(stream, Options)
+        return JsonSerializer.Deserialize<T>(stream, s_options)
             ?? throw new InvalidDataException($"Settings file '{path}' is empty.");
     }
 }

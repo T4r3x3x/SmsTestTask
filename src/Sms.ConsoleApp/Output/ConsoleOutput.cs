@@ -2,7 +2,7 @@ using Sms.Shared.Logging;
 
 namespace Sms.ConsoleApp.Output;
 
-public sealed class ConsoleOutput(DailyFileLogger logger) : IConsoleOutput
+public sealed class ConsoleOutput(IAppLogger logger) : IConsoleOutput
 {
     public void Log(string message) => logger.Write(message);
 

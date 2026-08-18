@@ -12,10 +12,10 @@ public sealed class ConsoleApplication(
 {
     public async Task<int> RunAsync(CancellationToken cancellationToken = default)
     {
-        output.WriteLine("Инициализация базы данных...");
+        output.Log("Инициализация базы данных...");
         await repository.InitializeAsync(cancellationToken);
 
-        output.WriteLine("Получение меню...");
+        output.Log("Получение меню...");
         IReadOnlyList<MenuItem> menu;
         try
         {

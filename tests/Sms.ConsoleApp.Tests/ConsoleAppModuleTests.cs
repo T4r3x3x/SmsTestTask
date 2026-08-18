@@ -22,7 +22,8 @@ public sealed class ConsoleAppModuleTests
             }
         };
         var builder = new ContainerBuilder();
-        builder.RegisterModule(new ConsoleAppModule(settings));
+        builder.RegisterModule(new ConsoleAppModule("unused.json"));
+        builder.RegisterInstance(settings);
         using var container = builder.Build();
 
         Assert.NotNull(container.Resolve<ConsoleApplication>());

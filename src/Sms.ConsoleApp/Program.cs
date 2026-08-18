@@ -18,10 +18,9 @@ IConsoleOutput? output = null;
 
 try
 {
-    var settings =
-        JsonSettingsLoader.Load<ConsoleAppSettings>(Path.Combine(AppContext.BaseDirectory, "appsettings.json"));
     var builder = new ContainerBuilder();
-    builder.RegisterModule(new ConsoleAppModule(settings));
+    builder.RegisterModule(new ConsoleAppModule(
+        Path.Combine(AppContext.BaseDirectory, "appsettings.json")));
     container = builder.Build();
 
     output = container.Resolve<IConsoleOutput>();
