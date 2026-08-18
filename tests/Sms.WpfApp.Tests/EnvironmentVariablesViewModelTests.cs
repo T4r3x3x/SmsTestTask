@@ -1,3 +1,7 @@
+using System.Reactive;
+using Sms.Shared.Logging;
+using Sms.WpfApp.Composition;
+using Sms.WpfApp.Configuration;
 using Sms.WpfApp.Features.EnvironmentVariables;
 
 namespace Sms.WpfApp.Tests;
@@ -9,7 +13,7 @@ public sealed class EnvironmentVariablesViewModelTests
     {
         var store = new TestStore { Values = { ["SMS_URL"] = "existing" } };
 
-        var viewModel = CreateViewModel(store, out _);
+        using var viewModel = CreateViewModel(store, out _);
 
         Assert.Equal("existing", Assert.Single(viewModel.Variables).Value);
         Assert.Empty(store.Writes);
@@ -20,7 +24,7 @@ public sealed class EnvironmentVariablesViewModelTests
     {
         var store = new TestStore();
 
-        var viewModel = CreateViewModel(store, out var log);
+        using var viewModel = CreateViewModel(store, out var log);
 
         Assert.Equal("default", Assert.Single(viewModel.Variables).Value);
         Assert.Equal(("SMS_URL", "default"), Assert.Single(store.Writes));
@@ -28,37 +32,40 @@ public sealed class EnvironmentVariablesViewModelTests
     }
 
     [Fact]
-    public void TrySave_PersistsValueAndUpdatesItem()
+    public void ValueChange_PersistsValue()
     {
         var store = new TestStore { Values = { ["SMS_URL"] = "old" } };
-        var viewModel = CreateViewModel(store, out var log);
+        using var viewModel = CreateViewModel(store, out var log);
         var item = Assert.Single(viewModel.Variables);
 
-        var success = viewModel.TrySave(item, "new", out var error);
+        item.Value = "new";
 
-        Assert.True(success);
-        Assert.Null(error);
         Assert.Equal("new", item.Value);
         Assert.Equal(("SMS_URL", "new"), Assert.Single(store.Writes));
         Assert.Contains("old -> new", Assert.Single(log));
     }
 
     [Fact]
-    public void TrySave_DoesNotUpdateItemWhenStoreFails()
+    public void ValueChange_RestoresValueAndShowsErrorWhenStoreFails()
     {
         var store = new TestStore
         {
             Values = { ["SMS_URL"] = "old" },
             Error = new InvalidOperationException("Access denied")
         };
-        var viewModel = CreateViewModel(store, out var log);
+        using var viewModel = CreateViewModel(store, out var log);
+        var errors = new List<string>();
+        using var handler = viewModel.ShowError.RegisterHandler(context =>
+        {
+            errors.Add(context.Input);
+            context.SetOutput(Unit.Default);
+        });
         var item = Assert.Single(viewModel.Variables);
 
-        var success = viewModel.TrySave(item, "new", out var error);
+        item.Value = "new";
 
-        Assert.False(success);
-        Assert.Equal("Access denied", error);
         Assert.Equal("old", item.Value);
+        Assert.Contains("Access denied", Assert.Single(errors));
         Assert.Contains("Failed to change SMS_URL", Assert.Single(log));
     }
 
@@ -66,16 +73,25 @@ public sealed class EnvironmentVariablesViewModelTests
         TestStore store,
         out List<string> log)
     {
-        var messages = new List<string>();
+        ReactiveUiBootstrapper.Initialize();
+        var logger = new TestLogger();
         var settings = new AppSettings
         {
             EnvironmentVariables = ["SMS_URL"],
             Defaults = new Dictionary<string, string> { ["SMS_URL"] = "default" },
             Comments = new Dictionary<string, string> { ["SMS_URL"] = "Endpoint" }
         };
-        var viewModel = new EnvironmentVariablesViewModel(settings, store, messages.Add);
-        log = messages;
+
+        var viewModel = new EnvironmentVariablesViewModel(settings, store, logger);
+        log = logger.Messages;
         return viewModel;
+    }
+
+    private sealed class TestLogger : IAppLogger
+    {
+        public List<string> Messages { get; } = [];
+
+        public void Write(string message) => Messages.Add(message);
     }
 
     private sealed class TestStore : IEnvironmentVariableStore

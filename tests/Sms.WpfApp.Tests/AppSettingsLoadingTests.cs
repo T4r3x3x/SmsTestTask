@@ -1,11 +1,12 @@
 using Sms.Shared.Configuration;
-using Sms.WpfApp.Features.EnvironmentVariables;
+using Sms.WpfApp.Configuration;
 
 namespace Sms.WpfApp.Tests;
 
-public sealed class AppSettingsTests
+public sealed class AppSettingsLoadingTests
 {
     [Fact]
+    [Trait("Category", "Integration")]
     public void Load_ReadsEnvironmentVariableConfiguration()
     {
         var path = Path.GetTempFileName();
@@ -22,7 +23,8 @@ public sealed class AppSettingsTests
                 }
                 """);
 
-            var settings = JsonSettingsLoader.Load<AppSettings>(path);
+            ISettingsLoader loader = new JsonSettingsLoader();
+            var settings = loader.Load<AppSettings>(path);
 
             Assert.Equal("SMS_URL", Assert.Single(settings.EnvironmentVariables));
             Assert.Equal("https://localhost", settings.Defaults["SMS_URL"]);

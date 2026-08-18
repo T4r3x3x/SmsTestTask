@@ -1,5 +1,4 @@
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
+using ReactiveUI;
 
 namespace Sms.WpfApp.Features.EnvironmentVariables;
 
@@ -7,7 +6,7 @@ public sealed class EnvironmentVariableItem(
     string name,
     string value,
     string comment,
-    bool isSensitive) : INotifyPropertyChanged
+    bool isSensitive) : ReactiveObject
 {
     private string _value = value;
 
@@ -16,26 +15,10 @@ public sealed class EnvironmentVariableItem(
     public string Value
     {
         get => _value;
-        private set
-        {
-            if (_value == value)
-            {
-                return;
-            }
-
-            _value = value;
-            OnPropertyChanged();
-        }
+        set => this.RaiseAndSetIfChanged(ref _value, value);
     }
 
     public string Comment { get; } = comment;
 
     public bool IsSensitive { get; } = isSensitive;
-
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    public void UpdateValue(string value) => Value = value;
-
-    private void OnPropertyChanged([CallerMemberName] string? propertyName = null) =>
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 }

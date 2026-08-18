@@ -1,37 +1,60 @@
 using System.Collections.ObjectModel;
+using System.Reactive;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using ReactiveUI;
+using Sms.Shared.Logging;
+using Sms.WpfApp.Configuration;
 
 namespace Sms.WpfApp.Features.EnvironmentVariables;
 
-public sealed class EnvironmentVariablesViewModel
+public sealed class EnvironmentVariablesViewModel : IDisposable
 {
+    private readonly CompositeDisposable _subscriptions = new();
+    private readonly Dictionary<EnvironmentVariableItem, string> _savedValues = [];
+    private readonly HashSet<EnvironmentVariableItem> _restoring = [];
     private readonly IEnvironmentVariableStore _store;
-    private readonly Action<string> _log;
+    private readonly IAppLogger _logger;
 
     public EnvironmentVariablesViewModel(
         AppSettings settings,
         IEnvironmentVariableStore store,
-        Action<string> log)
+        IAppLogger logger)
     {
         ArgumentNullException.ThrowIfNull(settings);
         _store = store;
-        _log = log;
+        _logger = logger;
         Variables = new ObservableCollection<EnvironmentVariableItem>(
             settings.EnvironmentVariables
                 .Where(name => !string.IsNullOrWhiteSpace(name))
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .Select(name => CreateItem(name, settings)));
+
+        foreach (var item in Variables)
+        {
+            _savedValues[item] = item.Value;
+            _subscriptions.Add(
+                item.WhenAnyValue(value => value.Value)
+                    .Skip(1)
+                    .DistinctUntilChanged()
+                    .Subscribe(value => Save(item, value)));
+        }
     }
 
     public ObservableCollection<EnvironmentVariableItem> Variables { get; }
 
-    public bool TrySave(EnvironmentVariableItem item, string value, out string? error)
+    public Interaction<string, Unit> ShowError { get; } = new();
+
+    public void Dispose() => _subscriptions.Dispose();
+
+    private void Save(EnvironmentVariableItem item, string value)
     {
-        error = null;
-        if (item.Value == value)
+        if (_restoring.Remove(item))
         {
-            return true;
+            return;
         }
 
+        var previousValue = _savedValues[item];
         try
         {
             _store.Set(item.Name, value);
@@ -40,15 +63,15 @@ public sealed class EnvironmentVariablesViewModel
                 throw new InvalidOperationException("The environment variable was not saved.");
             }
 
-            _log($"Changed {item.Name}: {Display(item, item.Value)} -> {Display(item, value)}");
-            item.UpdateValue(value);
-            return true;
+            _logger.Write($"Changed {item.Name}: {Display(item, previousValue)} -> {Display(item, value)}");
+            _savedValues[item] = value;
         }
         catch (Exception exception)
         {
-            error = exception.Message;
-            _log($"Failed to change {item.Name}: {exception.Message}");
-            return false;
+            _logger.Write($"Failed to change {item.Name}: {exception.Message}");
+            _restoring.Add(item);
+            item.Value = previousValue;
+            ShowError.Handle(exception.Message).Subscribe();
         }
     }
 
@@ -60,7 +83,7 @@ public sealed class EnvironmentVariablesViewModel
         {
             value = settings.Defaults.GetValueOrDefault(name, string.Empty);
             _store.Set(name, value);
-            _log($"Initialized {name}: {Display(isSensitive, value)}");
+            _logger.Write($"Initialized {name}: {Display(isSensitive, value)}");
         }
 
         return new EnvironmentVariableItem(

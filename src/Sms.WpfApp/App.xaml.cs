@@ -1,28 +1,25 @@
 using System.IO;
 using System.Windows;
-using Sms.Shared.Configuration;
-using Sms.Shared.Logging;
-using Sms.WpfApp.Features.EnvironmentVariables;
+using Autofac;
+using Sms.WpfApp.Composition;
 
 namespace Sms.WpfApp;
 
 public partial class App
 {
+    private IContainer? _container;
+
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
 
         try
         {
-            var settings = JsonSettingsLoader.Load<AppSettings>(
-                Path.Combine(AppContext.BaseDirectory, "appsettings.json"));
-            var logger = new DailyFileLogger(AppContext.BaseDirectory, "test-sms-wpf-app");
-            var viewModel = new EnvironmentVariablesViewModel(
-                settings,
-                new EnvironmentVariableStore(),
-                logger.Write);
-
-            new MainWindow { DataContext = viewModel }.Show();
+            var builder = new ContainerBuilder();
+            builder.RegisterModule(new WpfAppModule(
+                Path.Combine(AppContext.BaseDirectory, "appsettings.json")));
+            _container = builder.Build();
+            _container.Resolve<MainWindow>().Show();
         }
         catch (Exception exception)
         {
@@ -33,5 +30,11 @@ public partial class App
                 MessageBoxImage.Error);
             Shutdown(1);
         }
+    }
+
+    protected override void OnExit(ExitEventArgs e)
+    {
+        _container?.Dispose();
+        base.OnExit(e);
     }
 }

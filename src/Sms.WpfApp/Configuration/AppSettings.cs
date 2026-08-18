@@ -1,4 +1,4 @@
-namespace Sms.WpfApp.Features.EnvironmentVariables;
+namespace Sms.WpfApp.Configuration;
 
 public sealed record AppSettings
 {

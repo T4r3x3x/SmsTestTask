@@ -65,8 +65,7 @@
                               RowBackground="White"
                               AlternatingRowBackground="#FCFDF7"
                               RowHeaderWidth="0"
-                              SelectionUnit="CellOrRowHeader"
-                              CellEditEnding="VariablesGrid_OnCellEditEnding">
+                              SelectionUnit="CellOrRowHeader">
                         <DataGrid.Columns>
                             <DataGridTextColumn 
                                                 Width="0.2*"
@@ -77,7 +76,7 @@
                                                 Binding="{Binding Name}" />
                             <DataGridTextColumn Header="Значение"
                                                 Width="1.4*"
-                                                Binding="{Binding Value, Mode=OneWay}" />
+                                                Binding="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
                             <DataGridTextColumn Header="Комментарий"
                                                 Width="1.6*"
                                                 IsReadOnly="True"

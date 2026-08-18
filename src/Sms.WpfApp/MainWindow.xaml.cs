@@ -1,13 +1,34 @@
+using System.Reactive;
+using System.Reactive.Disposables;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using Sms.WpfApp.Features.EnvironmentVariables;
 
 namespace Sms.WpfApp;
 
-public partial class MainWindow
+public partial class MainWindow : IDisposable
 {
-    public MainWindow() => InitializeComponent();
+    private readonly CompositeDisposable _subscriptions = new();
+
+    public MainWindow(EnvironmentVariablesViewModel viewModel)
+    {
+        InitializeComponent();
+        
+        DataContext = viewModel;
+        
+        _subscriptions.Add(
+            viewModel.ShowError.RegisterHandler(context =>
+            {
+                MessageBox.Show(
+                    context.Input,
+                    "Не удалось сохранить значение",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                context.SetOutput(Unit.Default);
+            }));
+    }
+
+    public void Dispose() => _subscriptions.Dispose();
 
     private void TitleBar_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
@@ -21,24 +42,4 @@ public partial class MainWindow
         WindowState = WindowState.Minimized;
 
     private void CloseButton_OnClick(object sender, RoutedEventArgs e) => Close();
-
-    private void VariablesGrid_OnCellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
-    {
-        if (e.EditAction != DataGridEditAction.Commit ||
-            e.Column.Header?.ToString() != "Значение" ||
-            e.Row.Item is not EnvironmentVariableItem item ||
-            e.EditingElement is not TextBox editor ||
-            DataContext is not EnvironmentVariablesViewModel viewModel)
-        {
-            return;
-        }
-
-        if (viewModel.TrySave(item, editor.Text, out var error))
-        {
-            return;
-        }
-
-        e.Cancel = true;
-        MessageBox.Show(error, "Не удалось сохранить значение", MessageBoxButton.OK, MessageBoxImage.Error);
-    }
 }
