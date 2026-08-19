@@ -1,6 +1,7 @@
 <Window x:Class="Sms.WpfApp.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:Sms.WpfApp.Controls"
         Title="Тестовое WPF-приложение для SmartMealService"
         Width="920"
         Height="560"
@@ -46,19 +47,18 @@
                     </StackPanel>
                 </Grid>
 
-                <Border Grid.Row="1"
-                        Margin="28,0,28,28"
-                        Background="White"
-                        BorderBrush="#3D3D3D"
-                        BorderThickness="2"
-                        CornerRadius="24"
-                        ClipToBounds="True">
+                <controls:RoundedClipBorder Grid.Row="1"
+                                            Margin="28,0,28,28"
+                                            Background="White"
+                                            BorderBrush="#3D3D3D"
+                                            BorderThickness="2"
+                                            CornerRadius="24">
                     <DataGrid ItemsSource="{Binding Variables}"
                               AutoGenerateColumns="False"
                               CanUserAddRows="False"
                               CanUserDeleteRows="False"
                               CanUserReorderColumns="False"
-                              GridLinesVisibility="All"
+                              GridLinesVisibility="None"
                               HeadersVisibility="Column"
                               BorderThickness="0"
                               Background="White"
@@ -80,10 +80,12 @@
                             <DataGridTextColumn Header="Комментарий"
                                                 Width="1.6*"
                                                 IsReadOnly="True"
+                                                HeaderStyle="{StaticResource LastColumnHeaderStyle}"
+                                                CellStyle="{StaticResource LastColumnCellStyle}"
                                                 Binding="{Binding Comment}" />
                         </DataGrid.Columns>
                     </DataGrid>
-                </Border>
+                </controls:RoundedClipBorder>
             </Grid>
         </Border>
     </Grid>
