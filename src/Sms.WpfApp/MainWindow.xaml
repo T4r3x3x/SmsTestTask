@@ -81,7 +81,7 @@
                                                 Binding="{Binding Name}" />
                             <DataGridTextColumn Header="Значение"
                                                 Width="1.4*"
-                                                Binding="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
+                                                Binding="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             <DataGridTextColumn Header="Комментарий"
                                                 Width="1.6*"
                                                 IsReadOnly="True"
