@@ -16,6 +16,12 @@ public sealed class ConsoleOutput(ILogger<ConsoleOutput> logger) : IConsoleOutpu
     {
         Console.WriteLine(prompt);
         logger.LogInformation("{Prompt}", prompt);
-        return Console.ReadLine();
+        var value = Console.ReadLine();
+        if (value is not null)
+        {
+            logger.LogInformation("{Input}", value);
+        }
+
+        return value;
     }
 }
