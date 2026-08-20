@@ -4,6 +4,9 @@ using System.Windows.Media;
 
 namespace Sms.WpfApp.Controls;
 
+/// <summary>
+/// Бордер, скрывающий все выступающие части дочерних контролов
+/// </summary>
 public sealed class RoundedClipBorder : Border
 {
     protected override Size ArrangeOverride(Size finalSize)
