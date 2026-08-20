@@ -35,12 +35,20 @@ public sealed class ConsoleApplication(
 
         var menuById = menu.ToDictionary(item => item.Id, StringComparer.Ordinal);
         IReadOnlyCollection<OrderItem> items;
-        while (!OrderParser.TryParse(
-                   output.ReadLine("Введите заказ: Код1:Количество1;Код2:Количество2;..."),
-                   menuById,
-                   out items,
-                   out var error))
+        while (true)
         {
+            var input = output.ReadLine("Введите заказ: Код1:Количество1;Код2:Количество2;...");
+            if (input is null)
+            {
+                output.Log("Входной поток завершён.");
+                return 0;
+            }
+
+            if (OrderParser.TryParse(input, menuById, out items, out var error))
+            {
+                break;
+            }
+
             output.WriteLine(error!);
         }
 
