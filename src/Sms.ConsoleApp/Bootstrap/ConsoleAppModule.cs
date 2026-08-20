@@ -54,6 +54,10 @@ public sealed class ConsoleAppModule(string settingsPath) : Module
         builder.Register(context =>
                 MenuDbContext.CreateOptions(context.Resolve<ConsoleAppSettings>().ConnectionString))
             .SingleInstance();
+        builder.Register(context => new PostgreSqlDatabaseInitializer(
+                context.Resolve<ConsoleAppSettings>().ConnectionString,
+                context.Resolve<ILogger<PostgreSqlDatabaseInitializer>>()))
+            .SingleInstance();
         builder.RegisterType<MenuDbContext>().InstancePerLifetimeScope();
         builder.RegisterType<MenuRepository>().As<IMenuRepository>().InstancePerLifetimeScope();
 
