@@ -3,15 +3,10 @@ using Sms.Shared.Sms;
 
 namespace Sms.ConsoleApp.Database;
 
-public sealed class MenuRepository(
-    MenuDbContext database,
-    PostgreSqlDatabaseInitializer databaseInitializer) : IMenuRepository
+public sealed class MenuRepository(MenuDbContext database) : IMenuRepository
 {
-    public async Task InitializeAsync(CancellationToken cancellationToken = default)
-    {
-        await databaseInitializer.EnsureExistsAsync(cancellationToken);
-        await database.Database.MigrateAsync(cancellationToken);
-    }
+    public Task InitializeAsync(CancellationToken cancellationToken = default) =>
+        database.Database.MigrateAsync(cancellationToken);
 
     public async Task UpsertAsync(
         IReadOnlyCollection<MenuItem> menu,

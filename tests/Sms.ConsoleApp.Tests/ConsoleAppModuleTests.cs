@@ -28,9 +28,6 @@ public sealed class ConsoleAppModuleTests
 
         Assert.NotNull(container.Resolve<ConsoleApplication>());
         Assert.Same(container.Resolve<ISmsClient>(), container.Resolve<ISmsClient>());
-        Assert.Same(
-            container.Resolve<PostgreSqlDatabaseInitializer>(),
-            container.Resolve<PostgreSqlDatabaseInitializer>());
         Assert.Same(container.Resolve<MenuDbContext>(), container.Resolve<MenuDbContext>());
     }
 }

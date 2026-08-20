@@ -7,13 +7,13 @@ public static class OrderParser
 {
     public static bool TryParse(
         string? input,
-        IReadOnlyDictionary<string, MenuItem> menu,
+        IReadOnlyDictionary<string, MenuItem> menuByArticle,
         out IReadOnlyCollection<OrderItem> items,
         out string? error,
         CultureInfo? culture = null)
     {
         var result = new List<OrderItem>();
-        var codes = new HashSet<string>(StringComparer.Ordinal);
+        var articles = new HashSet<string>(StringComparer.Ordinal);
         culture ??= CultureInfo.CurrentCulture;
 
         foreach (var segment in (input ?? string.Empty)
@@ -25,23 +25,23 @@ public static class OrderParser
                 return Fail("Используйте формат Код:Количество.", out items, out error);
             }
 
-            var code = parts[0];
-            if (!menu.ContainsKey(code))
+            var article = parts[0];
+            if (!menuByArticle.TryGetValue(article, out var menuItem))
             {
-                return Fail($"Блюдо с кодом '{code}' не найдено.", out items, out error);
+                return Fail($"Блюдо с артикулом '{article}' не найдено.", out items, out error);
             }
 
-            if (!codes.Add(code))
+            if (!articles.Add(article))
             {
-                return Fail($"Код '{code}' указан несколько раз.", out items, out error);
+                return Fail($"Артикул '{article}' указан несколько раз.", out items, out error);
             }
 
             if (!TryParseQuantity(parts[1], culture, out var quantity) || quantity <= 0)
             {
-                return Fail($"Количество для кода '{code}' должно быть больше нуля.", out items, out error);
+                return Fail($"Количество для артикула '{article}' должно быть больше нуля.", out items, out error);
             }
 
-            result.Add(new OrderItem(code, quantity));
+            result.Add(new OrderItem(menuItem.Id, quantity));
         }
 
         if (result.Count == 0)

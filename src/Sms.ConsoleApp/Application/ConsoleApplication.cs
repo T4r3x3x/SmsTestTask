@@ -30,10 +30,10 @@ public sealed class ConsoleApplication(
         await repository.UpsertAsync(menu, cancellationToken);
         foreach (var item in menu)
         {
-            output.WriteLine($"{item.Name} - {item.Id} ({item.Article}) - {item.Price:0.##}");
+            output.WriteLine($"{item.Name} - {item.Article} - {item.Price:0.##}");
         }
 
-        var menuById = menu.ToDictionary(item => item.Id, StringComparer.Ordinal);
+        var menuByArticle = menu.ToDictionary(item => item.Article, StringComparer.Ordinal);
         IReadOnlyCollection<OrderItem> items;
         while (true)
         {
@@ -44,7 +44,7 @@ public sealed class ConsoleApplication(
                 return 0;
             }
 
-            if (OrderParser.TryParse(input, menuById, out items, out var error))
+            if (OrderParser.TryParse(input, menuByArticle, out items, out var error))
             {
                 break;
             }

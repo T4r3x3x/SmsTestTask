@@ -11,13 +11,13 @@ public sealed class OrderParserTests
         {
             new MenuItem("1", "A1", "Первое", 100, false, "Блюда", []),
             new MenuItem("2", "A2", "Второе", 200, true, "Блюда", [])
-        }.ToDictionary(item => item.Id);
+        }.ToDictionary(item => item.Article);
 
     [Fact]
     public void TryParse_ParsesWholeAndFractionalQuantities()
     {
         var success = OrderParser.TryParse(
-            "1:1;2:0.408",
+            "A1:1;A2:0.408",
             Menu,
             out var items,
             out var error,
@@ -25,7 +25,9 @@ public sealed class OrderParserTests
 
         Assert.True(success);
         Assert.Null(error);
+        Assert.Equal("1", items.ElementAt(0).Id);
         Assert.Equal(1m, items.ElementAt(0).Quantity);
+        Assert.Equal("2", items.ElementAt(1).Id);
         Assert.Equal(0.408m, items.ElementAt(1).Quantity);
     }
 
@@ -33,7 +35,7 @@ public sealed class OrderParserTests
     public void TryParse_AcceptsCurrentCultureDecimalSeparator()
     {
         var success = OrderParser.TryParse(
-            "2:0,408",
+            "A2:0,408",
             Menu,
             out var items,
             out _,
@@ -46,7 +48,7 @@ public sealed class OrderParserTests
     [Fact]
     public void TryParse_RejectsUnknownCode()
     {
-        var success = OrderParser.TryParse("3:1", Menu, out var items, out var error);
+        var success = OrderParser.TryParse("A3:1", Menu, out var items, out var error);
 
         Assert.False(success);
         Assert.Empty(items);
@@ -54,9 +56,9 @@ public sealed class OrderParserTests
     }
 
     [Theory]
-    [InlineData("1:0")]
-    [InlineData("1:-1")]
-    [InlineData("1:text")]
+    [InlineData("A1:0")]
+    [InlineData("A1:-1")]
+    [InlineData("A1:text")]
     public void TryParse_RejectsInvalidQuantity(string input)
     {
         var success = OrderParser.TryParse(input, Menu, out _, out var error);
@@ -68,7 +70,7 @@ public sealed class OrderParserTests
     [Fact]
     public void TryParse_RejectsDuplicateCode()
     {
-        var success = OrderParser.TryParse("1:1;1:2", Menu, out _, out var error);
+        var success = OrderParser.TryParse("A1:1;A1:2", Menu, out _, out var error);
 
         Assert.False(success);
         Assert.Contains("несколько раз", error);
@@ -77,7 +79,7 @@ public sealed class OrderParserTests
     [Theory]
     [InlineData("")]
     [InlineData(";")]
-    [InlineData("1")]
+    [InlineData("A1")]
     public void TryParse_RejectsEmptyOrMalformedInput(string input)
     {
         var success = OrderParser.TryParse(input, Menu, out _, out var error);
