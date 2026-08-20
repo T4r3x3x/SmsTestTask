@@ -1,4 +1,5 @@
 using Autofac;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
 
@@ -7,7 +8,6 @@ using Sms.ConsoleApp.Application;
 using Sms.ConsoleApp.Configuration;
 using Sms.ConsoleApp.Database;
 using Sms.ConsoleApp.Output;
-using Sms.Shared.Configuration;
 using Sms.Shared.Sms;
 
 namespace Sms.ConsoleApp.Bootstrap;
@@ -16,9 +16,16 @@ public sealed class ConsoleAppModule(string settingsPath) : Module
 {
     protected override void Load(ContainerBuilder builder)
     {
-        builder.RegisterType<JsonSettingsLoader>().As<ISettingsLoader>().SingleInstance();
-        builder.Register(context =>
-                context.Resolve<ISettingsLoader>().Load<ConsoleAppSettings>(settingsPath))
+        builder.Register(_ =>
+            {
+                var fullSettingsPath = Path.GetFullPath(settingsPath);
+                return new ConfigurationBuilder()
+                    .SetBasePath(Path.GetDirectoryName(fullSettingsPath)!)
+                    .AddJsonFile(Path.GetFileName(fullSettingsPath), optional: false, reloadOnChange: false)
+                    .Build()
+                    .Get<ConsoleAppSettings>()
+                    ?? throw new InvalidDataException($"Settings file '{fullSettingsPath}' is empty.");
+            })
             .SingleInstance();
 
         builder.RegisterType<NLogLoggerFactory>().As<ILoggerFactory>().SingleInstance();

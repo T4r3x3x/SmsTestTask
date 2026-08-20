@@ -1,8 +1,9 @@
+using System.IO;
 using Autofac;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
 
-using Sms.Shared.Configuration;
 using Sms.WpfApp.Configuration;
 using Sms.WpfApp.Features.EnvironmentVariables;
 
@@ -14,9 +15,16 @@ public sealed class WpfAppModule(string settingsPath) : Module
     {
         ReactiveUiBootstrapper.Initialize();
 
-        builder.RegisterType<JsonSettingsLoader>().As<ISettingsLoader>().SingleInstance();
-        builder.Register(context =>
-                context.Resolve<ISettingsLoader>().Load<AppSettings>(settingsPath))
+        builder.Register(_ =>
+            {
+                var fullSettingsPath = Path.GetFullPath(settingsPath);
+                return new ConfigurationBuilder()
+                    .SetBasePath(Path.GetDirectoryName(fullSettingsPath)!)
+                    .AddJsonFile(Path.GetFileName(fullSettingsPath), optional: false, reloadOnChange: false)
+                    .Build()
+                    .Get<AppSettings>()
+                    ?? throw new InvalidDataException($"Settings file '{fullSettingsPath}' is empty.");
+            })
             .SingleInstance();
 
         builder.RegisterType<NLogLoggerFactory>().As<ILoggerFactory>().SingleInstance();
