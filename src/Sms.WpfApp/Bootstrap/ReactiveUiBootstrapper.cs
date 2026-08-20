@@ -1,6 +1,6 @@
 using ReactiveUI.Builder;
 
-namespace Sms.WpfApp.Composition;
+namespace Sms.WpfApp.Bootstrap;
 
 public static class ReactiveUiBootstrapper
 {

@@ -1,6 +1,6 @@
 using Autofac;
 using Sms.ConsoleApp.Application;
-using Sms.ConsoleApp.Composition;
+using Sms.ConsoleApp.Bootstrap;
 using Sms.ConsoleApp.Configuration;
 using Sms.ConsoleApp.Database;
 using Sms.Shared.Sms;

@@ -1,7 +1,8 @@
 using System.IO;
 using System.Windows;
 using Autofac;
-using Sms.WpfApp.Composition;
+
+using Sms.WpfApp.Bootstrap;
 
 namespace Sms.WpfApp;
 

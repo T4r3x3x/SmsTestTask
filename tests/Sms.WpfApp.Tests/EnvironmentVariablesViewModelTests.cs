@@ -1,6 +1,6 @@
 using System.Reactive;
 using Sms.Shared.Logging;
-using Sms.WpfApp.Composition;
+using Sms.WpfApp.Bootstrap;
 using Sms.WpfApp.Configuration;
 using Sms.WpfApp.Features.EnvironmentVariables;
 

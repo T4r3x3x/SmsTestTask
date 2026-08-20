@@ -1,4 +1,5 @@
 using Autofac;
+
 using Sms.Client.Http.Client;
 using Sms.ConsoleApp.Application;
 using Sms.ConsoleApp.Configuration;
@@ -8,7 +9,7 @@ using Sms.Shared.Configuration;
 using Sms.Shared.Logging;
 using Sms.Shared.Sms;
 
-namespace Sms.ConsoleApp.Composition;
+namespace Sms.ConsoleApp.Bootstrap;
 
 public sealed class ConsoleAppModule(string settingsPath) : Module
 {

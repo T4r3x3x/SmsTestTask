@@ -1,10 +1,11 @@
 using Autofac;
+
 using Sms.Shared.Configuration;
 using Sms.Shared.Logging;
 using Sms.WpfApp.Configuration;
 using Sms.WpfApp.Features.EnvironmentVariables;
 
-namespace Sms.WpfApp.Composition;
+namespace Sms.WpfApp.Bootstrap;
 
 public sealed class WpfAppModule(string settingsPath) : Module
 {
