@@ -9,6 +9,4 @@ public sealed record AppSettings
 
     public IReadOnlyDictionary<string, string> Comments { get; init; }
         = new Dictionary<string, string>();
-
-    public IReadOnlyList<string> SensitiveVariables { get; init; } = [];
 }

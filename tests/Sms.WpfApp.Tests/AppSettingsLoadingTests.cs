@@ -18,8 +18,7 @@ public sealed class AppSettingsLoadingTests
                 {
                   "EnvironmentVariables": ["SMS_URL"],
                   "Defaults": { "SMS_URL": "https://localhost" },
-                  "Comments": { "SMS_URL": "Endpoint" },
-                  "SensitiveVariables": ["SMS_PASSWORD"]
+                  "Comments": { "SMS_URL": "Endpoint" }
                 }
                 """);
 
@@ -29,7 +28,6 @@ public sealed class AppSettingsLoadingTests
             Assert.Equal("SMS_URL", Assert.Single(settings.EnvironmentVariables));
             Assert.Equal("https://localhost", settings.Defaults["SMS_URL"]);
             Assert.Equal("Endpoint", settings.Comments["SMS_URL"]);
-            Assert.Contains("SMS_PASSWORD", settings.SensitiveVariables);
         }
         finally
         {

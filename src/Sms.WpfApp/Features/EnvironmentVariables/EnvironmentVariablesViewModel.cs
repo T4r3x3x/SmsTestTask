@@ -63,11 +63,7 @@ public sealed class EnvironmentVariablesViewModel : IDisposable
                 throw new InvalidOperationException("The environment variable was not saved.");
             }
 
-            _logger.LogInformation(
-                "Changed {VariableName}: {PreviousValue} -> {NewValue}",
-                item.Name,
-                Display(item, previousValue),
-                Display(item, value));
+            _logger.LogInformation("Changed environment variable {VariableName}", item.Name);
             _savedValues[item] = value;
         }
         catch (Exception exception)
@@ -82,27 +78,16 @@ public sealed class EnvironmentVariablesViewModel : IDisposable
     private EnvironmentVariableItem CreateItem(string name, AppSettings settings)
     {
         var value = _store.Get(name);
-        var isSensitive = settings.SensitiveVariables.Contains(name);
         if (value is null)
         {
             value = settings.Defaults.GetValueOrDefault(name, string.Empty);
             _store.Set(name, value);
-            _logger.LogInformation(
-                "Initialized {VariableName}: {Value}",
-                name,
-                Display(isSensitive, value));
+            _logger.LogInformation("Initialized environment variable {VariableName}", name);
         }
 
         return new EnvironmentVariableItem(
             name,
             value,
-            settings.Comments.GetValueOrDefault(name, string.Empty),
-            isSensitive);
+            settings.Comments.GetValueOrDefault(name, string.Empty));
     }
-
-    private static string Display(EnvironmentVariableItem item, string value) =>
-        Display(item.IsSensitive, value);
-
-    private static string Display(bool isSensitive, string value) =>
-        isSensitive ? "***" : value;
 }

@@ -5,8 +5,7 @@ namespace Sms.WpfApp.Features.EnvironmentVariables;
 public sealed class EnvironmentVariableItem(
     string name,
     string value,
-    string comment,
-    bool isSensitive) : ReactiveObject
+    string comment) : ReactiveObject
 {
     private string _value = value;
 
@@ -19,6 +18,4 @@ public sealed class EnvironmentVariableItem(
     }
 
     public string Comment { get; } = comment;
-
-    public bool IsSensitive { get; } = isSensitive;
 }

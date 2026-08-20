@@ -28,7 +28,8 @@ public sealed class EnvironmentVariablesViewModelTests
 
         Assert.Equal("default", Assert.Single(viewModel.Variables).Value);
         Assert.Equal(("SMS_URL", "default"), Assert.Single(store.Writes));
-        Assert.Contains("Initialized SMS_URL", Assert.Single(log));
+        Assert.Contains("Initialized environment variable SMS_URL", Assert.Single(log));
+        Assert.DoesNotContain("default", Assert.Single(log));
     }
 
     [Fact]
@@ -42,7 +43,9 @@ public sealed class EnvironmentVariablesViewModelTests
 
         Assert.Equal("new", item.Value);
         Assert.Equal(("SMS_URL", "new"), Assert.Single(store.Writes));
-        Assert.Contains("old -> new", Assert.Single(log));
+        Assert.Contains("Changed environment variable SMS_URL", Assert.Single(log));
+        Assert.DoesNotContain("old", Assert.Single(log));
+        Assert.DoesNotContain("new", Assert.Single(log));
     }
 
     [Fact]
