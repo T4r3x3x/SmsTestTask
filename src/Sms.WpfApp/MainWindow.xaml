@@ -16,7 +16,8 @@
         WindowStyle="None"
         AllowsTransparency="True"
         Background="Transparent"
-        ResizeMode="CanResizeWithGrip">
+        ResizeMode="CanResizeWithGrip"
+        Closing="MainWindow_OnClosing">
     <Grid Margin="24">
         <Border Background="#FFFDFD"
                 CornerRadius="30">
@@ -58,7 +59,9 @@
                                             BorderBrush="#3D3D3D"
                                             BorderThickness="2"
                                             CornerRadius="24">
-                    <DataGrid ItemsSource="{Binding Variables}"
+                    <DataGrid x:Name="EnvironmentVariablesGrid"
+                              ItemsSource="{Binding Variables}"
+                              CellEditEnding="EnvironmentVariablesGrid_OnCellEditEnding"
                               AutoGenerateColumns="False"
                               CanUserAddRows="False"
                               CanUserDeleteRows="False"
@@ -81,7 +84,7 @@
                                                 Binding="{Binding Name}" />
                             <DataGridTextColumn Header="Значение"
                                                 Width="1.4*"
-                                                Binding="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                                Binding="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=Explicit}" />
                             <DataGridTextColumn Header="Комментарий"
                                                 Width="1.6*"
                                                 IsReadOnly="True"

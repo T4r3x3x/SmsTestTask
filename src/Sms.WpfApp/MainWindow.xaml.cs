@@ -1,6 +1,8 @@
+using System.ComponentModel;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using Sms.WpfApp.Features.EnvironmentVariables;
 
@@ -42,4 +44,27 @@ public partial class MainWindow : IDisposable
         WindowState = WindowState.Minimized;
 
     private void CloseButton_OnClick(object sender, RoutedEventArgs e) => Close();
+
+    private void EnvironmentVariablesGrid_OnCellEditEnding(
+        object sender,
+        DataGridCellEditEndingEventArgs e)
+    {
+        if (e is { EditAction: DataGridEditAction.Commit, EditingElement: TextBox textBox })
+        {
+            textBox.GetBindingExpression(TextBox.TextProperty)?.UpdateSource();
+        }
+    }
+
+    /// <summary>
+    /// Завершает редактирование активной ячейки перед закрытием окна, чтобы последнее значение
+    /// попало во ViewModel, даже если пользователь не покинул редактируемую ячейку.
+    /// </summary>
+    private void MainWindow_OnClosing(object? sender, CancelEventArgs e)
+    {
+        if (!EnvironmentVariablesGrid.CommitEdit(DataGridEditingUnit.Cell, true) ||
+            !EnvironmentVariablesGrid.CommitEdit(DataGridEditingUnit.Row, true))
+        {
+            e.Cancel = true;
+        }
+    }
 }
