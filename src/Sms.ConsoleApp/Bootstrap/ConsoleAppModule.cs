@@ -1,4 +1,6 @@
 using Autofac;
+using Microsoft.Extensions.Logging;
+using NLog.Extensions.Logging;
 
 using Sms.Client.Http.Client;
 using Sms.ConsoleApp.Application;
@@ -6,7 +8,6 @@ using Sms.ConsoleApp.Configuration;
 using Sms.ConsoleApp.Database;
 using Sms.ConsoleApp.Output;
 using Sms.Shared.Configuration;
-using Sms.Shared.Logging;
 using Sms.Shared.Sms;
 
 namespace Sms.ConsoleApp.Bootstrap;
@@ -20,9 +21,8 @@ public sealed class ConsoleAppModule(string settingsPath) : Module
                 context.Resolve<ISettingsLoader>().Load<ConsoleAppSettings>(settingsPath))
             .SingleInstance();
 
-        builder.Register(_ => new DailyFileLogger(AppContext.BaseDirectory, "test-sms-console-app"))
-            .As<IAppLogger>()
-            .SingleInstance();
+        builder.RegisterType<NLogLoggerFactory>().As<ILoggerFactory>().SingleInstance();
+        builder.RegisterGeneric(typeof(Logger<>)).As(typeof(ILogger<>)).SingleInstance();
         builder.RegisterType<ConsoleOutput>().As<IConsoleOutput>().SingleInstance();
 
         builder.Register(context => new HttpClient

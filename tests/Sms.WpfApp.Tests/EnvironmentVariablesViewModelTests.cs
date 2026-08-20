@@ -1,5 +1,5 @@
 using System.Reactive;
-using Sms.Shared.Logging;
+using Microsoft.Extensions.Logging;
 using Sms.WpfApp.Bootstrap;
 using Sms.WpfApp.Configuration;
 using Sms.WpfApp.Features.EnvironmentVariables;
@@ -87,11 +87,21 @@ public sealed class EnvironmentVariablesViewModelTests
         return viewModel;
     }
 
-    private sealed class TestLogger : IAppLogger
+    private sealed class TestLogger : ILogger<EnvironmentVariablesViewModel>
     {
         public List<string> Messages { get; } = [];
 
-        public void Write(string message) => Messages.Add(message);
+        public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
+
+        public bool IsEnabled(LogLevel logLevel) => true;
+
+        public void Log<TState>(
+            LogLevel logLevel,
+            EventId eventId,
+            TState state,
+            Exception? exception,
+            Func<TState, Exception?, string> formatter) =>
+            Messages.Add(formatter(state, exception));
     }
 
     private sealed class TestStore : IEnvironmentVariableStore

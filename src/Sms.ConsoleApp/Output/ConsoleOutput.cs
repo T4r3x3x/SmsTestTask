@@ -1,23 +1,23 @@
-using Sms.Shared.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace Sms.ConsoleApp.Output;
 
-public sealed class ConsoleOutput(IAppLogger logger) : IConsoleOutput
+public sealed class ConsoleOutput(ILogger<ConsoleOutput> logger) : IConsoleOutput
 {
-    public void Log(string message) => logger.Write(message);
+    public void Log(string message) => logger.LogInformation("{Message}", message);
 
     public void WriteLine(string message)
     {
         Console.WriteLine(message);
-        logger.Write(message);
+        logger.LogInformation("{Message}", message);
     }
 
     public string? ReadLine(string prompt)
     {
         Console.WriteLine(prompt);
-        logger.Write(prompt);
+        logger.LogInformation("{Prompt}", prompt);
         var value = Console.ReadLine();
-        logger.Write($"INPUT {value}");
+        logger.LogInformation("INPUT {Value}", value);
         return value;
     }
 }

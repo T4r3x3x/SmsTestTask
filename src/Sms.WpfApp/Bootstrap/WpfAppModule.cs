@@ -1,7 +1,8 @@
 using Autofac;
+using Microsoft.Extensions.Logging;
+using NLog.Extensions.Logging;
 
 using Sms.Shared.Configuration;
-using Sms.Shared.Logging;
 using Sms.WpfApp.Configuration;
 using Sms.WpfApp.Features.EnvironmentVariables;
 
@@ -18,9 +19,8 @@ public sealed class WpfAppModule(string settingsPath) : Module
                 context.Resolve<ISettingsLoader>().Load<AppSettings>(settingsPath))
             .SingleInstance();
 
-        builder.Register(_ => new DailyFileLogger(AppContext.BaseDirectory, "test-sms-wpf-app"))
-            .As<IAppLogger>()
-            .SingleInstance();
+        builder.RegisterType<NLogLoggerFactory>().As<ILoggerFactory>().SingleInstance();
+        builder.RegisterGeneric(typeof(Logger<>)).As(typeof(ILogger<>)).SingleInstance();
         builder.RegisterType<EnvironmentVariableStore>()
             .As<IEnvironmentVariableStore>()
             .SingleInstance();

@@ -2,8 +2,8 @@ using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using Microsoft.Extensions.Logging;
 using ReactiveUI;
-using Sms.Shared.Logging;
 using Sms.WpfApp.Configuration;
 
 namespace Sms.WpfApp.Features.EnvironmentVariables;
@@ -14,12 +14,12 @@ public sealed class EnvironmentVariablesViewModel : IDisposable
     private readonly Dictionary<EnvironmentVariableItem, string> _savedValues = [];
     private readonly HashSet<EnvironmentVariableItem> _restoring = [];
     private readonly IEnvironmentVariableStore _store;
-    private readonly IAppLogger _logger;
+    private readonly ILogger<EnvironmentVariablesViewModel> _logger;
 
     public EnvironmentVariablesViewModel(
         AppSettings settings,
         IEnvironmentVariableStore store,
-        IAppLogger logger)
+        ILogger<EnvironmentVariablesViewModel> logger)
     {
         ArgumentNullException.ThrowIfNull(settings);
         _store = store;
@@ -63,12 +63,16 @@ public sealed class EnvironmentVariablesViewModel : IDisposable
                 throw new InvalidOperationException("The environment variable was not saved.");
             }
 
-            _logger.Write($"Changed {item.Name}: {Display(item, previousValue)} -> {Display(item, value)}");
+            _logger.LogInformation(
+                "Changed {VariableName}: {PreviousValue} -> {NewValue}",
+                item.Name,
+                Display(item, previousValue),
+                Display(item, value));
             _savedValues[item] = value;
         }
         catch (Exception exception)
         {
-            _logger.Write($"Failed to change {item.Name}: {exception.Message}");
+            _logger.LogError(exception, "Failed to change {VariableName}", item.Name);
             _restoring.Add(item);
             item.Value = previousValue;
             ShowError.Handle(exception.Message).Subscribe();
@@ -83,7 +87,10 @@ public sealed class EnvironmentVariablesViewModel : IDisposable
         {
             value = settings.Defaults.GetValueOrDefault(name, string.Empty);
             _store.Set(name, value);
-            _logger.Write($"Initialized {name}: {Display(isSensitive, value)}");
+            _logger.LogInformation(
+                "Initialized {VariableName}: {Value}",
+                name,
+                Display(isSensitive, value));
         }
 
         return new EnvironmentVariableItem(
